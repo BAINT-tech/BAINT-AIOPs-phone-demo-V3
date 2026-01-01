@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -177,21 +176,6 @@ button {
   box-shadow:0 0 12px rgba(30,144,255,0.9);
 }
 
-/* SUBTITLE BOX */
-#subtitle-box {
-  position:absolute;
-  bottom:100px;
-  width:90%;
-  left:5%;
-  background:rgba(0,0,0,0.6);
-  color:white;
-  padding:10px;
-  border-radius:10px;
-  font-size:13px;
-  text-align:center;
-  display:none;
-}
-
 /* MOCK FEATURE SCREEN */
 .mock-screen {
   display:none;
@@ -199,6 +183,14 @@ button {
 }
 .mock-screen.active {
   display:block;
+}
+
+/* SUBTITLES */
+.subtitle {
+  margin-top:12px;
+  font-size:13px;
+  color:#111;
+  min-height:32px;
 }
 </style>
 </head>
@@ -243,12 +235,20 @@ button {
       <div class="card">
         <strong>Authorized Task Automation</strong>
         <p>AI executes tasks visually like a human using your device.</p>
-        <button onclick="startEducationAI()">Authorize Task</button>
+        <button onclick="startAI()">Authorize Task</button>
       </div>
       <div class="card">
-        <strong>Moment Detection</strong>
+        <strong>Moment Detection & Privacy</strong>
         <p>On-device intelligence • Privacy-first • No cloud</p>
       </div>
+
+      <div>
+        <button onclick="setLanguage('en')">Speak English</button>
+        <button onclick="setLanguage('zh')">Speak Chinese</button>
+      </div>
+
+      <div class="subtitle" id="subtitle"></div>
+
       <button onclick="backHome()">Back</button>
     </div>
 
@@ -284,8 +284,6 @@ button {
 
     <!-- AI CURSOR -->
     <div id="ai-cursor"></div>
-    <!-- SUBTITLE BOX -->
-    <div id="subtitle-box"></div>
 
   </div>
 </div>
@@ -313,74 +311,48 @@ function backHome() {
   stopAI();
 }
 
-/* AI Education script */
-let aiVoice;
-const subtitles = [
-  { text: "Welcome to Baint AIOPs, the human-centric automation platform.", delay: 0 },
-  { text: "It helps you automate tasks visually, on-device, without compromising privacy.", delay: 4000 },
-  { text: "Our AI can monitor, secure, and optimize your phone activities.", delay: 9000 },
-  { text: "All powered locally, ensuring your data never leaves your device.", delay: 14000 }
-];
-const subtitlesCN = [
-  { text: "欢迎来到Baint AIOPs，面向人类的自动化平台。", delay: 0 },
-  { text: "它可以在不泄露隐私的情况下可视化自动执行任务。", delay: 4000 },
-  { text: "我们的AI可以监控、保护并优化您的手机活动。", delay: 9000 },
-  { text: "所有操作均在本地完成，确保您的数据不离开设备。", delay: 14000 }
-];
+/* AI Cursor & Voice */
+let aiLanguage = 'en';
+let synth = window.speechSynthesis;
+let subtitleEl = document.getElementById('subtitle');
+let aiUtterance;
 
-function startEducationAI() {
+function setLanguage(lang) {
+  aiLanguage = lang;
+  speakAI();
+}
+
+function startAI() {
   const cursor = document.getElementById("ai-cursor");
-  const subtitleBox = document.getElementById("subtitle-box");
   cursor.style.display = "block";
-  subtitleBox.style.display = "block";
-
-  // Cursor animation
   cursor.animate([
     { transform: "translate(0,0)" },
     { transform: "translate(140px,-120px)" },
     { transform: "translate(220px,-40px)" }
   ], {
-    duration: 16000,
+    duration: 3000,
     easing: "ease-in-out",
     fill: "forwards"
   });
+  speakAI();
+}
 
-  // Speak English first
-  aiVoice = new SpeechSynthesisUtterance();
-  aiVoice.text = subtitles.map(s=>s.text).join(' ');
-  aiVoice.lang = "en-US";
-  aiVoice.rate = 1;
-  aiVoice.pitch = 1;
-  speechSynthesis.speak(aiVoice);
+function speakAI() {
+  stopAI();
+  const englishText = "Welcome to BAINT AIOPs Demo. This is a human-centric AI automation layer designed to run tasks visually on-device, ensuring privacy and control. It educates, automates, and monitors your device seamlessly.";
+  const chineseText = "欢迎来到BAINT AIOPs演示。这是一个以人为中心的AI自动化层，旨在在设备上可视化运行任务，确保隐私和控制。它可以教育、自动化并无缝监控您的设备。";
 
-  // Show subtitles
-  subtitles.forEach(s=>{
-    setTimeout(()=>{
-      subtitleBox.innerText = s.text;
-    }, s.delay);
-  });
+  let text = aiLanguage === 'en' ? englishText : chineseText;
+  subtitleEl.textContent = text;
 
-  // After English, speak Chinese
-  setTimeout(()=>{
-    aiVoice = new SpeechSynthesisUtterance();
-    aiVoice.text = subtitlesCN.map(s=>s.text).join(' ');
-    aiVoice.lang = "zh-CN";
-    aiVoice.rate = 1;
-    aiVoice.pitch = 1;
-    speechSynthesis.speak(aiVoice);
-
-    subtitlesCN.forEach(s=>{
-      setTimeout(()=>{
-        subtitleBox.innerText = s.text;
-      }, s.delay);
-    });
-  }, 18000); // Wait until English finishes
+  aiUtterance = new SpeechSynthesisUtterance(text);
+  aiUtterance.lang = aiLanguage === 'en' ? 'en-US' : 'zh-CN';
+  synth.speak(aiUtterance);
 }
 
 function stopAI() {
-  speechSynthesis.cancel();
-  document.getElementById("ai-cursor").style.display = "none";
-  document.getElementById("subtitle-box").style.display = "none";
+  synth.cancel();
+  subtitleEl.textContent = '';
 }
 </script>
 
