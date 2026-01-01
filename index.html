@@ -177,15 +177,18 @@ button {
   box-shadow:0 0 12px rgba(30,144,255,0.9);
 }
 
-/* SUBTITLE */
-#subtitle {
+/* SUBTITLE BOX */
+#subtitle-box {
   position:absolute;
-  bottom:90px;
-  width:100%;
+  bottom:100px;
+  width:90%;
+  left:5%;
+  background:rgba(0,0,0,0.6);
+  color:white;
+  padding:10px;
+  border-radius:10px;
+  font-size:13px;
   text-align:center;
-  font-size:14px;
-  color:#1E90FF;
-  font-weight:bold;
   display:none;
 }
 
@@ -240,7 +243,7 @@ button {
       <div class="card">
         <strong>Authorized Task Automation</strong>
         <p>AI executes tasks visually like a human using your device.</p>
-        <button onclick="startAI()">Authorize Task</button>
+        <button onclick="startEducationAI()">Authorize Task</button>
       </div>
       <div class="card">
         <strong>Moment Detection</strong>
@@ -281,7 +284,8 @@ button {
 
     <!-- AI CURSOR -->
     <div id="ai-cursor"></div>
-    <div id="subtitle"></div>
+    <!-- SUBTITLE BOX -->
+    <div id="subtitle-box"></div>
 
   </div>
 </div>
@@ -306,76 +310,77 @@ function openMock(id) {
 /* Back to home */
 function backHome() {
   show('home');
+  stopAI();
 }
 
-/* Language & Kids Mode Config */
-let currentLang = 'en'; // options: 'en', 'es', 'fr'
-let kidsMode = false; // slower speed, simpler sentences
+/* AI Education script */
+let aiVoice;
+const subtitles = [
+  { text: "Welcome to Baint AIOPs, the human-centric automation platform.", delay: 0 },
+  { text: "It helps you automate tasks visually, on-device, without compromising privacy.", delay: 4000 },
+  { text: "Our AI can monitor, secure, and optimize your phone activities.", delay: 9000 },
+  { text: "All powered locally, ensuring your data never leaves your device.", delay: 14000 }
+];
+const subtitlesCN = [
+  { text: "欢迎来到Baint AIOPs，面向人类的自动化平台。", delay: 0 },
+  { text: "它可以在不泄露隐私的情况下可视化自动执行任务。", delay: 4000 },
+  { text: "我们的AI可以监控、保护并优化您的手机活动。", delay: 9000 },
+  { text: "所有操作均在本地完成，确保您的数据不离开设备。", delay: 14000 }
+];
 
-/* AI Cursor + Voice + Subtitles */
-function startAI() {
+function startEducationAI() {
   const cursor = document.getElementById("ai-cursor");
-  const subEl = document.getElementById("subtitle");
+  const subtitleBox = document.getElementById("subtitle-box");
   cursor.style.display = "block";
-  subEl.style.display = "block";
+  subtitleBox.style.display = "block";
 
-  const lines = {
-    en: kidsMode ? [
-      "Starting AI task...",
-      "AI is checking everything slowly...",
-      "Task is done!"
-    ] : [
-      "Starting AI task...",
-      "AI is analyzing the system visually...",
-      "Task completed successfully!"
-    ],
-    es: kidsMode ? [
-      "Iniciando tarea de IA...",
-      "La IA revisa todo lentamente...",
-      "¡Tarea lista!"
-    ] : [
-      "Iniciando tarea de IA...",
-      "La IA está analizando visualmente el sistema...",
-      "¡Tarea completada con éxito!"
-    ],
-    fr: kidsMode ? [
-      "Démarrage de la tâche IA...",
-      "L'IA vérifie tout lentement...",
-      "Tâche terminée!"
-    ] : [
-      "Démarrage de la tâche IA...",
-      "L'IA analyse visuellement le système...",
-      "Tâche terminée avec succès!"
-    ]
-  };
-
-  const speakLine = (text) => {
-    return new Promise(resolve => {
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = currentLang === 'en' ? 'en-US' : (currentLang === 'es' ? 'es-ES' : 'fr-FR');
-      utter.rate = kidsMode ? 0.8 : 1;
-      utter.pitch = kidsMode ? 1.2 : 1;
-      utter.onend = resolve;
-      speechSynthesis.speak(utter);
-      subEl.textContent = text;
-      setTimeout(resolve, 1300); // fallback
-    });
-  };
-
-  // Animate cursor
+  // Cursor animation
   cursor.animate([
     { transform: "translate(0,0)" },
     { transform: "translate(140px,-120px)" },
     { transform: "translate(220px,-40px)" }
-  ], { duration: 4000, easing: "ease-in-out", fill: "forwards" });
+  ], {
+    duration: 16000,
+    easing: "ease-in-out",
+    fill: "forwards"
+  });
 
-  // Speak lines in sequence
-  (async () => {
-    for (let i = 0; i < lines[currentLang].length; i++) {
-      await speakLine(lines[currentLang][i]);
-    }
-    subEl.style.display = "none"; // hide subtitles after finishing
-  })();
+  // Speak English first
+  aiVoice = new SpeechSynthesisUtterance();
+  aiVoice.text = subtitles.map(s=>s.text).join(' ');
+  aiVoice.lang = "en-US";
+  aiVoice.rate = 1;
+  aiVoice.pitch = 1;
+  speechSynthesis.speak(aiVoice);
+
+  // Show subtitles
+  subtitles.forEach(s=>{
+    setTimeout(()=>{
+      subtitleBox.innerText = s.text;
+    }, s.delay);
+  });
+
+  // After English, speak Chinese
+  setTimeout(()=>{
+    aiVoice = new SpeechSynthesisUtterance();
+    aiVoice.text = subtitlesCN.map(s=>s.text).join(' ');
+    aiVoice.lang = "zh-CN";
+    aiVoice.rate = 1;
+    aiVoice.pitch = 1;
+    speechSynthesis.speak(aiVoice);
+
+    subtitlesCN.forEach(s=>{
+      setTimeout(()=>{
+        subtitleBox.innerText = s.text;
+      }, s.delay);
+    });
+  }, 18000); // Wait until English finishes
+}
+
+function stopAI() {
+  speechSynthesis.cancel();
+  document.getElementById("ai-cursor").style.display = "none";
+  document.getElementById("subtitle-box").style.display = "none";
 }
 </script>
 
