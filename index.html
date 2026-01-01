@@ -186,17 +186,23 @@ button {
   display:block;
 }
 
-/* AVATAR */
-#ai-avatar {
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  background:#1E90FF;
+/* SUBTITLE */
+#subtitle {
   position:absolute;
-  top:10%;
-  right:10%;
+  bottom:70px;
+  width:100%;
+  text-align:center;
+  font-size:14px;
+  color:#000;
+  background:rgba(255,255,255,0.8);
+  padding:6px 12px;
+  border-radius:8px;
   display:none;
-  box-shadow:0 0 10px rgba(30,144,255,0.8);
+}
+
+/* LANGUAGE SELECTOR */
+#lang-selector {
+  margin-top:10px;
 }
 </style>
 </head>
@@ -247,6 +253,13 @@ button {
         <strong>Moment Detection</strong>
         <p>On-device intelligence • Privacy-first • No cloud</p>
       </div>
+
+      <select id="lang-selector" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+      </select>
+
       <button onclick="backHome()">Back</button>
     </div>
 
@@ -282,13 +295,21 @@ button {
 
     <!-- AI CURSOR -->
     <div id="ai-cursor"></div>
-    <!-- AI AVATAR -->
-    <div id="ai-avatar"></div>
+
+    <!-- SUBTITLE DISPLAY -->
+    <div id="subtitle"></div>
 
   </div>
 </div>
 
 <script>
+let currentLang = 'en';
+const subtitles = {
+  en: ["Starting AI task...", "AI is processing visually...", "Task completed successfully!"],
+  es: ["Iniciando tarea de IA...", "La IA está procesando visualmente...", "¡Tarea completada con éxito!"],
+  fr: ["Démarrage de la tâche IA...", "L'IA traite visuellement...", "Tâche terminée avec succès!"]
+};
+
 /* Boot screen timer */
 setTimeout(() => { show('home'); }, 4500);
 
@@ -304,31 +325,51 @@ function openMock(id) {
 }
 
 /* Back to home */
-function backHome() { show('home'); }
+function backHome() {
+  show('home');
+  hideSubtitle();
+}
 
-/* AI Cursor Animation + Voice */
+/* AI Cursor + Subtitles Animation */
 function startAI() {
   const cursor = document.getElementById("ai-cursor");
-  const avatar = document.getElementById("ai-avatar");
   cursor.style.display = "block";
-  avatar.style.display = "block";
-
-  // Cursor movement animation
+  showSubtitle(subtitles[currentLang]);
+  
   cursor.animate([
     { transform: "translate(0,0)" },
     { transform: "translate(140px,-120px)" },
     { transform: "translate(220px,-40px)" }
-  ], {
-    duration: 3500,
-    easing: "ease-in-out",
-    fill: "forwards"
-  });
+  ], { duration: 4000, easing: "ease-in-out", fill: "forwards" });
+}
 
-  // AI speech
-  const msg = new SpeechSynthesisUtterance();
-  msg.text = "Welcome to Baint AIOPs demo. This human-centric automation engine executes tasks visually, monitors devices, ensures privacy, and allows seamless automation.";
-  msg.lang = document.getElementById("lang") ? document.getElementById("lang").value : "en-US";
-  window.speechSynthesis.speak(msg);
+/* Subtitle Functions */
+function showSubtitle(lines) {
+  const subEl = document.getElementById("subtitle");
+  subEl.style.display = "block";
+  let index = 0;
+  
+  function nextLine() {
+    if(index < lines.length){
+      subEl.textContent = lines[index];
+      index++;
+      setTimeout(nextLine, 1300);
+    } else {
+      hideSubtitle();
+    }
+  }
+  
+  nextLine();
+}
+
+function hideSubtitle() {
+  const subEl = document.getElementById("subtitle");
+  subEl.style.display = "none";
+}
+
+/* Change language */
+function changeLanguage() {
+  currentLang = document.getElementById("lang-selector").value;
 }
 </script>
 
