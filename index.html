@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,29 +15,9 @@ body {
   height:100vh;
   margin:0;
 }
-.phone {
-  width:380px;
-  height:760px;
-  background:#000;
-  border-radius:40px;
-  padding:14px;
-  box-shadow:0 30px 60px rgba(0,0,0,0.4);
-}
-.screen-wrapper {
-  width:100%;
-  height:100%;
-  background:#fff;
-  border-radius:28px;
-  overflow:hidden;
-  position:relative;
-}
-.notch {
-  width:140px;
-  height:24px;
-  background:#000;
-  border-radius:0 0 14px 14px;
-  margin:0 auto;
-}
+.phone { width:380px; height:760px; background:#000; border-radius:40px; padding:14px; box-shadow:0 30px 60px rgba(0,0,0,0.4); }
+.screen-wrapper { width:100%; height:100%; background:#fff; border-radius:28px; overflow:hidden; position:relative; }
+.notch { width:140px; height:24px; background:#000; border-radius:0 0 14px 14px; margin:0 auto; }
 .screen { display:none; height:100%; padding:20px; box-sizing:border-box; }
 .screen.active { display:block; }
 .center { display:flex; flex-direction:column; justify-content:center; align-items:center; height:100%; text-align:center; }
@@ -54,8 +33,8 @@ body {
 button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px; color:white; margin-top:20px; font-size:14px; cursor:pointer; }
 #ai-cursor { width:16px; height:16px; background:#1E90FF; border-radius:50%; position:absolute; top:45%; left:15%; display:none; z-index:10; box-shadow:0 0 12px rgba(30,144,255,0.9); }
 .browser-bar { background:#F3F4F6; padding:8px; border-radius:10px; font-size:12px; margin-bottom:12px; }
-.search-box { background:#fff; border:1px solid #E5E7EB; border-radius:8px; padding:10px; font-size:13px; }
-.result { background:#F9FAFB; border-radius:12px; padding:12px; margin-top:12px; font-size:13px; }
+.search-box { background:#fff; border:1px solid #E5E7EB; border-radius:8px; padding:10px; font-size:13px; min-height:22px; }
+.result { background:#F9FAFB; border-radius:12px; padding:12px; margin-top:12px; font-size:13px; min-height:30px; }
 .education { margin-top:16px; font-size:13px; color:#374151; }
 .education strong { display:block; margin-bottom:6px; }
 .subtitles { position:absolute; bottom:20px; left:20px; right:20px; background:rgba(0,0,0,0.75); color:#fff; padding:10px; border-radius:10px; font-size:13px; display:none; }
@@ -116,117 +95,94 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
 <div class="screen" id="browser">
   <h3 id="app-title">On-Device Browser</h3>
   <div class="browser-bar" id="browser-bar">https://search.local</div>
-  <div class="search-box" id="search-box">Searching: “How to automate a task”</div>
-  <div class="result" id="result">
-    <strong>Result Found</strong><br>AI navigated the interface visually.
-  </div>
-  <div class="education" id="education">
-    <strong>What just happened?</strong>
-    • You authorized the task<br>
-    • AIOPs observed the screen<br>
-    • It interacted like a human<br>
-    • No cloud • No data sent
-  </div>
+  <div class="search-box" id="search-box"></div>
+  <div class="result" id="result"></div>
+  <div class="education" id="education"></div>
   <button onclick="show('home')">Done</button>
 </div>
 
 <div id="ai-cursor"></div>
 <div class="subtitles" id="subtitles"></div>
+<audio id="typing-sound" src="https://www.soundjay.com/keyboard/keyboard-1.mp3"></audio>
 
 </div>
 </div>
 
 <script>
-let lang = "en";
+let lang="en";
 
-const apps = [
-  {
-    id: "browser",
-    title: {en:"On-Device Browser", zh:"设备浏览器"},
-    search:"How to automate a task",
-    result:{en:"AI navigated the interface visually.", zh:"AI 以视觉方式操作界面。"},
-    edu:{en:["You authorized the task","AIOPs observed the screen","It interacted like a human","No cloud • No data sent"],
-         zh:["您已授权此任务","AIOPs 观察屏幕","像人类一样进行交互","无云端 • 数据不会离开设备"]}
-  },
-  {
-    id: "whatsapp",
-    title:{en:"WhatsApp Interface", zh:"WhatsApp 界面"},
-    search:"Send a message to Alex",
-    result:{en:"AI typed and sent a message.", zh:"AI 已输入并发送消息。"},
-    edu:{en:["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"],
-         zh:["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]}
-  },
-  {
-    id:"x",
-    title:{en:"X Interface", zh:"X 界面"},
-    search:"Post a quick update",
-    result:{en:"AI posted successfully.", zh:"AI 已成功发布。"},
-    edu:{en:["Task authorized","AIOPs opened X","Posted update","No cloud used"],
-         zh:["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]}
-  },
-  {
-    id:"spotify",
-    title:{en:"Spotify Interface", zh:"Spotify 界面"},
-    search:"Play my playlist",
-    result:{en:"AI started playing music.", zh:"AI 开始播放音乐。"},
-    edu:{en:["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"],
-         zh:["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]}
-  }
+const apps=[
+{ id:"browser", title:{en:"On-Device Browser", zh:"设备浏览器"}, search:"How to automate a task", result:{en:"AI navigated the interface visually.", zh:"AI 以视觉方式操作界面。"}, edu:{en:["You authorized the task","AIOPs observed the screen","It interacted like a human","No cloud • No data sent"], zh:["您已授权此任务","AIOPs 观察屏幕","像人类一样进行交互","无云端 • 数据不会离开设备"]}},
+{ id:"whatsapp", title:{en:"WhatsApp Interface", zh:"WhatsApp 界面"}, search:"Send a message to Alex", result:{en:"AI typed and sent a message.", zh:"AI 已输入并发送消息。"}, edu:{en:["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh:["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]}},
+{ id:"x", title:{en:"X Interface", zh:"X 界面"}, search:"Post a quick update", result:{en:"AI posted successfully.", zh:"AI 已成功发布。"}, edu:{en:["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh:["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]}},
+{ id:"spotify", title:{en:"Spotify Interface", zh:"Spotify 界面"}, search:"Play my playlist", result:{en:"AI started playing music.", zh:"AI 开始播放音乐。"}, edu:{en:["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh:["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]}}
 ];
 
 function setLang(l){
-  lang = l;
-  document.getElementById("enBtn").classList.toggle("active", l==="en");
-  document.getElementById("zhBtn").classList.toggle("active", l==="zh");
+  lang=l;
+  document.getElementById("enBtn").classList.toggle("active",l==="en");
+  document.getElementById("zhBtn").classList.toggle("active",l==="zh");
 }
 
 setTimeout(()=>show('home'),4500);
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 
 function startAI(){
-  const cursor = document.getElementById("ai-cursor");
-  cursor.style.display = "block";
-  cursor.animate([
-    {transform:"translate(0,0)"},
-    {transform:"translate(140px,-100px)"},
-    {transform:"translate(200px,-60px)"}
-  ], {duration:2500, easing:"ease-in-out", fill:"forwards"});
-  
+  const cursor=document.getElementById("ai-cursor");
+  cursor.style.display="block";
+  cursor.animate([{transform:"translate(0,0)"},{transform:"translate(140px,-100px)"},{transform:"translate(200px,-60px)"}],{duration:2500,easing:"ease-in-out",fill:"forwards"});
   setTimeout(()=>{
     cursor.style.display="none";
-    const chosenApp = apps[Math.floor(Math.random()*apps.length)];
+    const chosenApp=apps[Math.floor(Math.random()*apps.length)];
     showApp(chosenApp);
   },2600);
 }
 
 function showApp(app){
   show('browser');
-  document.getElementById("app-title").innerText = app.title[lang];
-  document.getElementById("browser-bar").innerText = "https://"+app.id+".local";
-  document.getElementById("search-box").innerText = `Searching: “${app.search}”`;
-  document.getElementById("result").innerHTML = `<strong>Result Found</strong><br>${app.result[lang]}`;
-  document.getElementById("education").innerHTML = `<strong>What just happened?</strong><br>• ${app.edu[lang].join("<br>• ")}`;
-  playVoice(app);
+  document.getElementById("app-title").innerText=app.title[lang];
+  document.getElementById("browser-bar").innerText="https://"+app.id+".local";
+  document.getElementById("search-box").innerText="";
+  document.getElementById("result").innerText="";
+  document.getElementById("education").innerHTML="<strong>What just happened?</strong>";
+  typeText(app.search,()=>{ // typing finished, show result
+    document.getElementById("result").innerHTML=`<strong>Result Found</strong><br>${app.result[lang]}`;
+    app.edu[lang].forEach(line=>{
+      const li=document.createElement("div");
+      li.innerHTML="• "+line;
+      document.getElementById("education").appendChild(li);
+    });
+    playVoice(app);
+  });
+}
+
+function typeText(text,callback){
+  const box=document.getElementById("search-box");
+  let i=0;
+  const sound=document.getElementById("typing-sound");
+  const interval=setInterval(()=>{
+    box.innerText+=text[i];
+    sound.currentTime=0;
+    sound.play();
+    i++;
+    if(i>=text.length){clearInterval(interval);callback();}
+  },120);
 }
 
 function playVoice(app){
-  const text = `${app.edu[lang].join(". ")}.`;
-  const subtitles = document.getElementById("subtitles");
-  subtitles.innerText = text;
+  const text=app.edu[lang].join(". ")+".";
+  const subtitles=document.getElementById("subtitles");
+  subtitles.innerText=text;
   subtitles.style.display="block";
   if('speechSynthesis' in window){
     speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang==="zh"?"zh-CN":"en-US";
+    const utter=new SpeechSynthesisUtterance(text);
+    utter.lang=lang==="zh"?"zh-CN":"en-US";
     speechSynthesis.speak(utter);
   }
-  const estimatedTime = Math.max(text.length*80,5000);
-  setTimeout(()=>subtitles.style.display="none", estimatedTime);
+  const estimatedTime=Math.max(text.length*80,5000);
+  setTimeout(()=>subtitles.style.display="none",estimatedTime);
 }
 </script>
-
 </body>
 </html>
