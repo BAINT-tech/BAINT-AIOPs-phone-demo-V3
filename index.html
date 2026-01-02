@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,6 +24,7 @@ body {
   border-radius:40px;
   padding:14px;
   box-shadow:0 30px 60px rgba(0,0,0,0.4);
+  position:relative;
 }
 
 /* SCREEN */
@@ -70,6 +70,7 @@ body {
   width:90px;
   height:90px;
   margin-bottom:16px;
+  opacity:0.1; /* light background */
 }
 
 /* LOADER */
@@ -155,72 +156,33 @@ button {
   box-shadow:0 0 12px rgba(30,144,255,0.9);
 }
 
-/* MOCK BROWSER */
-.browser-bar {
+/* MOCK BROWSER / CHAT / SPOTIFY */
+.mock-app {
   background:#F3F4F6;
-  padding:8px;
-  border-radius:10px;
-  font-size:12px;
-  margin-bottom:12px;
-}
-.search-box {
-  background:#fff;
-  border:1px solid #E5E7EB;
-  border-radius:8px;
-  padding:10px;
-  font-size:13px;
-}
-.result {
-  background:#F9FAFB;
-  border-radius:12px;
   padding:12px;
+  border-radius:12px;
+  font-size:13px;
   margin-top:12px;
-  font-size:13px;
 }
-
-/* EDUCATION */
-.education {
-  margin-top:16px;
-  font-size:13px;
+.mock-title { font-weight:bold; margin-bottom:8px; }
+.subtitle {
+  font-size:12px;
   color:#374151;
-}
-.education strong {
-  display:block;
-  margin-bottom:6px;
-}
-
-/* SUBTITLES */
-.subtitles {
-  position:absolute;
-  bottom:20px;
-  left:20px;
-  right:20px;
-  background:rgba(0,0,0,0.75);
-  color:#fff;
-  padding:10px;
-  border-radius:10px;
-  font-size:13px;
-  display:none;
+  margin-top:10px;
 }
 
 /* LANGUAGE TOGGLE */
-.toggle {
-  display:flex;
-  gap:10px;
+#lang-toggle {
   margin-top:10px;
-}
-.toggle button {
-  background:#E5E7EB;
-  color:#111;
-  border:none;
   padding:6px 12px;
-  border-radius:8px;
+  font-size:12px;
+  border-radius:6px;
+  border:none;
+  background:#00BFFF;
+  color:white;
   cursor:pointer;
 }
-.toggle button.active {
-  background:#1E90FF;
-  color:#fff;
-}
+
 </style>
 </head>
 
@@ -263,11 +225,6 @@ button {
 <div class="screen" id="aiops">
   <h3>AIOPs Brain Engine</h3>
 
-  <div class="toggle">
-    <button id="enBtn" class="active" onclick="setLang('en')">English</button>
-    <button id="zhBtn" onclick="setLang('zh')">中文</button>
-  </div>
-
   <div class="card">
     <strong>Authorized Task Automation</strong>
     <p>AI interacts visually like a human after permission.</p>
@@ -277,55 +234,64 @@ button {
   <button onclick="show('home')">Back</button>
 </div>
 
-<!-- MOCK BROWSER -->
-<div class="screen" id="browser">
-  <h3>On-Device Browser</h3>
-
-  <div class="browser-bar">https://search.local</div>
-  <div class="search-box">Searching: “How to automate a task”</div>
-
-  <div class="result">
-    <strong>Result Found</strong><br>
-    AI navigated the interface visually.
-  </div>
-
-  <div class="education">
-    <strong>What just happened?</strong>
-    • You authorized the task<br>
-    • AIOPs observed the screen<br>
-    • It interacted like a human<br>
-    • No cloud • No data sent
-  </div>
-
-  <button onclick="show('home')">Done</button>
+<!-- MOCK APP AREA -->
+<div class="screen" id="mockapp">
+  <h3 id="app-title">App Simulation</h3>
+  <div class="mock-app" id="mock-content"></div>
+  <div class="subtitle" id="subtitle"></div>
+  <button id="lang-toggle" onclick="toggleLang()">English / 中文</button>
+  <button onclick="show('home')">Back</button>
 </div>
 
 <div id="ai-cursor"></div>
-<div class="subtitles" id="subtitles"></div>
 
 </div>
 </div>
 
 <script>
-let lang = "en";
-
-const scriptText = {
-  en: "You authorized this task. AIOPs observes the screen, understands the interface, and interacts like a human. No cloud. No data leaves your device.",
-  zh: "您已授权此任务。AIOPs 观察屏幕，理解界面，并像人类一样进行交互。无云端。数据不会离开设备。"
-};
-
-function setLang(l) {
-  lang = l;
-  document.getElementById("enBtn").classList.toggle("active", l==="en");
-  document.getElementById("zhBtn").classList.toggle("active", l==="zh");
-}
-
 setTimeout(() => show('home'), 4500);
 
 function show(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
+
+/* AI CURSOR + MULTI-APP FLOW + EDUCATION + VOICE */
+let lang = "en";
+const apps = [
+  {
+    name: "Browser",
+    content: "Searching 'How to automate a task'\nResult: AI navigated visually",
+    subtitle: {
+      en: "AI browsed safely on-device after you authorized task.",
+      zh: "在您授权任务后，AI在设备上安全地浏览。"
+    }
+  },
+  {
+    name: "WhatsApp",
+    content: "Typing message: 'Hello from AIOPs AI!'",
+    subtitle: {
+      en: "AI is sending messages like a human would after authorization.",
+      zh: "授权后，AI像人类一样发送消息。"
+    }
+  },
+  {
+    name: "X",
+    content: "Posting: 'Testing AIOPs integration...'",
+    subtitle: {
+      en: "AI can interact with social platforms safely after permission.",
+      zh: "AI在获得许可后可以安全地与社交平台互动。"
+    }
+  },
+  {
+    name: "Spotify",
+    content: "Playing 'Lo-fi coding beats'",
+    subtitle: {
+      en: "AI can control media applications after authorized task.",
+      zh: "在授权任务后，AI可以控制媒体应用程序。"
+    }
+  }
+];
 
 function startAI() {
   const cursor = document.getElementById("ai-cursor");
@@ -335,28 +301,46 @@ function startAI() {
     { transform: "translate(0,0)" },
     { transform: "translate(140px,-100px)" },
     { transform: "translate(200px,-60px)" }
-  ], {duration:2500, easing:"ease-in-out", fill:"forwards"});
+  ], {
+    duration: 2500,
+    easing: "ease-in-out",
+    fill: "forwards"
+  });
 
   setTimeout(() => {
     cursor.style.display = "none";
-    show('browser');
-    playVoice();
+    showMockApp();
   }, 2600);
 }
 
-function playVoice() {
-  const text = scriptText[lang];
-  const subtitles = document.getElementById("subtitles");
-  subtitles.innerText = text;
-  subtitles.style.display = "block";
+function showMockApp() {
+  show('mockapp');
+  const app = apps[Math.floor(Math.random()*apps.length)];
+  document.getElementById('app-title').innerText = app.name;
+  document.getElementById('mock-content').innerText = app.content;
+  document.getElementById('subtitle').innerText = lang === "en" ? app.subtitle.en : app.subtitle.zh;
 
+  speakSubtitle(app.subtitle[lang]);
+}
+
+function toggleLang() {
+  lang = lang === "en" ? "zh" : "en";
+  const appName = document.getElementById('app-title').innerText;
+  const app = apps.find(a => a.name === appName);
+  if(app) {
+    document.getElementById('subtitle').innerText = lang === "en" ? app.subtitle.en : app.subtitle.zh;
+    speakSubtitle(app.subtitle[lang]);
+  }
+}
+
+/* VOICE SPEECH */
+function speakSubtitle(text) {
   if ('speechSynthesis' in window) {
     const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang === "zh" ? "zh-CN" : "en-US";
+    utter.lang = lang === "en" ? "en-US" : "zh-CN";
+    speechSynthesis.cancel();
     speechSynthesis.speak(utter);
   }
-
-  setTimeout(()=>subtitles.style.display="none", 8000);
 }
 </script>
 
