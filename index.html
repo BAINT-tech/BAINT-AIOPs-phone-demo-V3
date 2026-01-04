@@ -26,11 +26,11 @@ body {
 .loader span { display:block; height:100%; width:0; background:#1E90FF; animation:load 4s linear forwards; }
 @keyframes load { to { width:100%; } }
 .boot-footer { position:absolute; bottom:30px; width:100%; text-align:center; font-size:12px; color:#9CA3AF; }
-.icon-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:30px; }
+.icon-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
 .app { text-align:center; font-size:12px; cursor:pointer; }
 .icon { width:64px; height:64px; border-radius:16px; background:linear-gradient(135deg,#1E90FF,#00BFFF); margin:0 auto 8px; }
 .card { background:#F9FAFB; border-radius:14px; padding:16px; margin-top:20px; border:1px solid #E5E7EB; }
-button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px; color:white; margin-top:20px; font-size:14px; cursor:pointer; }
+button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px; color:white; margin-top:12px; font-size:14px; cursor:pointer; }
 #ai-cursor { width:16px; height:16px; background:#1E90FF; border-radius:50%; position:absolute; top:45%; left:15%; display:none; z-index:10; box-shadow:0 0 12px rgba(30,144,255,0.9); }
 .browser-bar { background:#F3F4F6; padding:8px; border-radius:10px; font-size:12px; margin-bottom:12px; }
 .search-box { background:#fff; border:1px solid #E5E7EB; border-radius:8px; padding:10px; font-size:13px; min-height:22px; }
@@ -41,6 +41,9 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
 .toggle { display:flex; gap:10px; margin-top:10px; }
 .toggle button { background:#E5E7EB; color:#111; border:none; padding:6px 12px; border-radius:8px; cursor:pointer; }
 .toggle button.active { background:#1E90FF; color:#fff; }
+.mode-select { display:flex; justify-content:center; gap:10px; margin-bottom:16px; }
+.mode-select button { background:#E5E7EB; color:#111; border:none; padding:6px 14px; border-radius:8px; cursor:pointer; }
+.mode-select button.active { background:#1E90FF; color:#fff; }
 </style>
 </head>
 
@@ -66,8 +69,14 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
 <div class="screen" id="home">
   <h3>Home</h3>
   <p style="font-size:13px">Human-centric automation, running on-device</p>
+  
+  <div class="mode-select">
+    <button id="demoModeBtn" class="active" onclick="selectMode('demo')">AIOPs Demo</button>
+    <button id="studentModeBtn" onclick="selectMode('student')">Student Assist</button>
+  </div>
+  
   <div class="icon-grid">
-    <div class="app" onclick="show('aiops')"><div class="icon"></div>AIOPs</div>
+    <div class="app" onclick="startSelectedMode()"><div class="icon"></div>Start</div>
     <div class="app"><div class="icon"></div>Automation</div>
     <div class="app"><div class="icon"></div>Monitor</div>
     <div class="app"><div class="icon"></div>Security</div>
@@ -110,18 +119,13 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
 
 <script>
 let lang = "en";
+let selectedMode = "demo"; // default mode
 
 // STUDENT ASSIST MODE (Assignment Helper)
 const learningTasks = {
   assignment: {
-    title: {
-      en: "Student Assignment Helper",
-      zh: "学生作业助手"
-    },
-    question: {
-      en: "Explain photosynthesis for a biology assignment",
-      zh: "解释生物学作业中的光合作用"
-    },
+    title: { en: "Student Assignment Helper", zh: "学生作业助手" },
+    question: { en: "Explain photosynthesis for a biology assignment", zh: "解释生物学作业中的光合作用" },
     steps: {
       en: [
         "Student authorized learning assistance",
@@ -145,37 +149,28 @@ const learningTasks = {
   }
 };
 
-// OTHER MOCK APPS
-const apps = [
+// MOCK AIOPs APPS
+const appsDemo = [
   {
     id: "whatsapp",
     title: { en: "WhatsApp Interface", zh: "WhatsApp 界面" },
     search: "Send a message to Alex",
     result: { en: "AI typed and sent a message.", zh: "AI 已输入并发送消息。" },
-    edu: {
-      en: ["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"],
-      zh: ["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]
-    }
+    edu: { en: ["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh: ["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"] }
   },
   {
     id: "x",
     title: { en: "X Interface", zh: "X 界面" },
     search: "Post a quick update",
     result: { en: "AI posted successfully.", zh: "AI 已成功发布。" },
-    edu: {
-      en: ["Task authorized","AIOPs opened X","Posted update","No cloud used"],
-      zh: ["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]
-    }
+    edu: { en: ["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh: ["任务已授权","AIOPs 打开 X","发布更新","无云端使用"] }
   },
   {
     id: "spotify",
     title: { en: "Spotify Interface", zh: "Spotify 界面" },
     search: "Play my playlist",
     result: { en: "AI started playing music.", zh: "AI 开始播放音乐。" },
-    edu: {
-      en: ["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"],
-      zh: ["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]
-    }
+    edu: { en: ["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh: ["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"] }
   }
 ];
 
@@ -185,14 +180,20 @@ function setLang(l) {
   document.getElementById("zhBtn").classList.toggle("active", l === "zh");
 }
 
-setTimeout(() => show("home"), 4500);
-
-function show(id) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+// MODE TOGGLE ON HOME
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById("demoModeBtn").classList.toggle("active", mode === "demo");
+  document.getElementById("studentModeBtn").classList.toggle("active", mode === "student");
 }
 
-// AI CURSOR & START AI
+// START BASED ON SELECTED MODE
+function startSelectedMode() {
+  if(selectedMode === "demo") startAI();
+  else showStudentAssist();
+}
+
+// AI CURSOR & START AI DEMO
 function startAI() {
   const cursor = document.getElementById("ai-cursor");
   cursor.style.display = "block";
@@ -202,8 +203,28 @@ function startAI() {
   );
   setTimeout(() => {
     cursor.style.display = "none";
-    showStudentAssist(); // now opens Student Assignment Helper
+    showAppDemo();
   }, 2300);
+}
+
+// SHOW AIOPs DEMO APP
+function showAppDemo() {
+  const app = appsDemo[Math.floor(Math.random()*appsDemo.length)];
+  show("browser");
+  document.getElementById("app-title").innerText = app.title[lang];
+  document.getElementById("browser-bar").innerText = "https://"+app.id+".local";
+  document.getElementById("search-box").innerText = "";
+  document.getElementById("result").innerText = "";
+  document.getElementById("education").innerHTML = "<strong>What just happened?</strong>";
+  typeText(app.search, () => {
+    document.getElementById("result").innerHTML = "<strong>Result Found</strong><br>" + app.result[lang];
+    app.edu[lang].forEach(line => {
+      const div = document.createElement("div");
+      div.innerText = "• " + line;
+      document.getElementById("education").appendChild(div);
+    });
+    playVoice(app.edu[lang]);
+  });
 }
 
 // SHOW STUDENT ASSIST MODE
@@ -218,9 +239,9 @@ function showStudentAssist() {
   typeText(task.question[lang], () => {
     document.getElementById("result").innerHTML = "<strong>Guided Explanation</strong><br>" + task.result[lang];
     task.steps[lang].forEach(step => {
-      const line = document.createElement("div");
-      line.innerText = "• " + step;
-      document.getElementById("education").appendChild(line);
+      const div = document.createElement("div");
+      div.innerText = "• " + step;
+      document.getElementById("education").appendChild(div);
     });
     playVoice(task.steps[lang]);
   });
@@ -236,10 +257,7 @@ function typeText(text, callback) {
     sound.currentTime = 0;
     sound.play();
     i++;
-    if (i >= text.length) {
-      clearInterval(interval);
-      callback();
-    }
+    if(i >= text.length) { clearInterval(interval); callback(); }
   }, 90);
 }
 
@@ -249,16 +267,16 @@ function playVoice(lines) {
   const text = lines.join(". ") + ".";
   subtitles.innerText = text;
   subtitles.style.display = "block";
-  if ("speechSynthesis" in window) {
+  if("speechSynthesis" in window){
     speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang = lang === "zh" ? "zh-CN" : "en-US";
     speechSynthesis.speak(utter);
   }
-  setTimeout(() => {
-    subtitles.style.display = "none";
-  }, Math.max(text.length * 70, 5000));
+  setTimeout(()=>{ subtitles.style.display = "none"; }, Math.max(text.length*70,5000));
 }
+
+setTimeout(()=>show("home"),4500);
 </script>
 </body>
 </html>
