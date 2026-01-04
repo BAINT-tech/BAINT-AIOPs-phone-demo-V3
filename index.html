@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,15 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  background:#E5E7EB;
-  font-family: Arial, sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
-}
+body { background:#E5E7EB; font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
 .phone { width:380px; height:760px; background:#000; border-radius:40px; padding:14px; box-shadow:0 30px 60px rgba(0,0,0,0.4); }
 .screen-wrapper { width:100%; height:100%; background:#fff; border-radius:28px; overflow:hidden; position:relative; }
 .notch { width:140px; height:24px; background:#000; border-radius:0 0 14px 14px; margin:0 auto; }
@@ -85,21 +78,6 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
   </div>
 </div>
 
-<!-- AIOPs -->
-<div class="screen" id="aiops">
-  <h3>AIOPs Brain Engine</h3>
-  <div class="toggle">
-    <button id="enBtn" class="active" onclick="setLang('en')">English</button>
-    <button id="zhBtn" onclick="setLang('zh')">中文</button>
-  </div>
-  <div class="card">
-    <strong>Authorized Task Automation</strong>
-    <p>AI interacts visually like a human after permission.</p>
-    <button onclick="startAI()">Authorize Task</button>
-  </div>
-  <button onclick="show('home')">Back</button>
-</div>
-
 <!-- MOCK APPS -->
 <div class="screen" id="browser">
   <h3 id="app-title">On-Device Browser</h3>
@@ -119,164 +97,104 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
 
 <script>
 let lang = "en";
-let selectedMode = "demo"; // default mode
+let selectedMode = "demo";
 
-// STUDENT ASSIST MODE (Assignment Helper)
-const learningTasks = {
-  assignment: {
-    title: { en: "Student Assignment Helper", zh: "学生作业助手" },
-    question: { en: "Explain photosynthesis for a biology assignment", zh: "解释生物学作业中的光合作用" },
-    steps: {
-      en: [
-        "Student authorized learning assistance",
-        "AIOPs analyzed the question",
-        "Key concepts were identified",
-        "Explanation structured step-by-step",
-        "Student remains in control"
-      ],
-      zh: [
-        "学生已授权学习辅助",
-        "AIOPs 分析了问题",
-        "识别关键概念",
-        "逐步构建解释",
-        "学生始终保持控制权"
-      ]
-    },
-    result: {
-      en: "Photosynthesis is the process by which plants convert sunlight into energy using carbon dioxide and water.",
-      zh: "光合作用是植物利用二氧化碳和水将阳光转化为能量的过程。"
-    }
-  }
-};
-
-// MOCK AIOPs APPS
+// Demo apps
 const appsDemo = [
-  {
-    id: "whatsapp",
-    title: { en: "WhatsApp Interface", zh: "WhatsApp 界面" },
-    search: "Send a message to Alex",
-    result: { en: "AI typed and sent a message.", zh: "AI 已输入并发送消息。" },
-    edu: { en: ["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh: ["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"] }
-  },
-  {
-    id: "x",
-    title: { en: "X Interface", zh: "X 界面" },
-    search: "Post a quick update",
-    result: { en: "AI posted successfully.", zh: "AI 已成功发布。" },
-    edu: { en: ["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh: ["任务已授权","AIOPs 打开 X","发布更新","无云端使用"] }
-  },
-  {
-    id: "spotify",
-    title: { en: "Spotify Interface", zh: "Spotify 界面" },
-    search: "Play my playlist",
-    result: { en: "AI started playing music.", zh: "AI 开始播放音乐。" },
-    edu: { en: ["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh: ["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"] }
-  }
+  {id:"whatsapp", title:{en:"WhatsApp Interface", zh:"WhatsApp 界面"}, search:"Send a message to Alex", result:{en:"AI typed and sent a message.", zh:"AI 已输入并发送消息。"}, edu:{en:["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh:["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]}},
+  {id:"x", title:{en:"X Interface", zh:"X 界面"}, search:"Post a quick update", result:{en:"AI posted successfully.", zh:"AI 已成功发布。"}, edu:{en:["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh:["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]}},
+  {id:"spotify", title:{en:"Spotify Interface", zh:"Spotify 界面"}, search:"Play my playlist", result:{en:"AI started playing music.", zh:"AI 开始播放音乐。"}, edu:{en:["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh:["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]}}
 ];
 
-function setLang(l) {
-  lang = l;
-  document.getElementById("enBtn").classList.toggle("active", l === "en");
-  document.getElementById("zhBtn").classList.toggle("active", l === "zh");
+// Student Assist task
+const studentTask = {
+  title: {en:"Student Assignment Helper", zh:"学生作业助手"},
+  question: {en:"Explain photosynthesis for a biology assignment", zh:"解释生物学作业中的光合作用"},
+  steps: {en:["Student authorized learning assistance","AIOPs analyzed the question","Key concepts were identified","Explanation structured step-by-step","Student remains in control"], zh:["学生已授权学习辅助","AIOPs 分析了问题","识别关键概念","逐步构建解释","学生始终保持控制权"]},
+  result: {en:"Photosynthesis is the process by which plants convert sunlight into energy using carbon dioxide and water.", zh:"光合作用是植物利用二氧化碳和水将阳光转化为能量的过程。"}
+};
+
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active")); document.getElementById(id).classList.add("active");}
+
+// Boot transition after 3.5s
+window.addEventListener("load", ()=>{
+  setTimeout(()=>show("home"),3500);
+});
+
+function setLang(l){
+  lang=l;
 }
 
-// MODE TOGGLE ON HOME
-function selectMode(mode) {
-  selectedMode = mode;
-  document.getElementById("demoModeBtn").classList.toggle("active", mode === "demo");
-  document.getElementById("studentModeBtn").classList.toggle("active", mode === "student");
+// Mode selection
+function selectMode(mode){
+  selectedMode=mode;
+  document.getElementById("demoModeBtn").classList.toggle("active", mode==="demo");
+  document.getElementById("studentModeBtn").classList.toggle("active", mode==="student");
 }
 
-// START BASED ON SELECTED MODE
-function startSelectedMode() {
-  if(selectedMode === "demo") startAI();
-  else showStudentAssist();
+// Start mode
+function startSelectedMode(){
+  if(selectedMode==="demo") startAIOPsDemo();
+  else startStudentAssist();
 }
 
-// AI CURSOR & START AI DEMO
-function startAI() {
-  const cursor = document.getElementById("ai-cursor");
-  cursor.style.display = "block";
-  cursor.animate(
-    [{ transform: "translate(0,0)" }, { transform: "translate(160px,-80px)" }, { transform: "translate(220px,-40px)" }],
-    { duration: 2200, easing: "ease-in-out", fill: "forwards" }
-  );
-  setTimeout(() => {
-    cursor.style.display = "none";
-    showAppDemo();
-  }, 2300);
-}
-
-// SHOW AIOPs DEMO APP
-function showAppDemo() {
-  const app = appsDemo[Math.floor(Math.random()*appsDemo.length)];
+// AIOPs Demo
+function startAIOPsDemo(){
+  const app=appsDemo[Math.floor(Math.random()*appsDemo.length)];
   show("browser");
-  document.getElementById("app-title").innerText = app.title[lang];
-  document.getElementById("browser-bar").innerText = "https://"+app.id+".local";
-  document.getElementById("search-box").innerText = "";
-  document.getElementById("result").innerText = "";
-  document.getElementById("education").innerHTML = "<strong>What just happened?</strong>";
-  typeText(app.search, () => {
-    document.getElementById("result").innerHTML = "<strong>Result Found</strong><br>" + app.result[lang];
-    app.edu[lang].forEach(line => {
-      const div = document.createElement("div");
-      div.innerText = "• " + line;
-      document.getElementById("education").appendChild(div);
-    });
+  document.getElementById("app-title").innerText=app.title[lang];
+  document.getElementById("browser-bar").innerText="https://"+app.id+".local";
+  document.getElementById("search-box").innerText="";
+  document.getElementById("result").innerText="";
+  document.getElementById("education").innerHTML="<strong>What just happened?</strong>";
+  typeText(app.search, ()=>{
+    document.getElementById("result").innerHTML="<strong>Result Found</strong><br>"+app.result[lang];
+    app.edu[lang].forEach(line=>{const div=document.createElement("div"); div.innerText="• "+line; document.getElementById("education").appendChild(div);});
     playVoice(app.edu[lang]);
   });
 }
 
-// SHOW STUDENT ASSIST MODE
-function showStudentAssist() {
+// Student Assist
+function startStudentAssist(){
+  const task = studentTask;
   show("browser");
-  const task = learningTasks.assignment;
-  document.getElementById("app-title").innerText = task.title[lang];
-  document.getElementById("browser-bar").innerText = "https://study.local";
-  document.getElementById("search-box").innerText = "";
-  document.getElementById("result").innerText = "";
-  document.getElementById("education").innerHTML = "<strong>Learning Mode:</strong>";
-  typeText(task.question[lang], () => {
-    document.getElementById("result").innerHTML = "<strong>Guided Explanation</strong><br>" + task.result[lang];
-    task.steps[lang].forEach(step => {
-      const div = document.createElement("div");
-      div.innerText = "• " + step;
-      document.getElementById("education").appendChild(div);
-    });
+  document.getElementById("app-title").innerText=task.title[lang];
+  document.getElementById("browser-bar").innerText="https://study.local";
+  document.getElementById("search-box").innerText="";
+  document.getElementById("result").innerText="";
+  document.getElementById("education").innerHTML="<strong>Learning Mode:</strong>";
+  typeText(task.question[lang], ()=>{
+    document.getElementById("result").innerHTML="<strong>Guided Explanation</strong><br>"+task.result[lang];
+    task.steps[lang].forEach(line=>{const div=document.createElement("div"); div.innerText="• "+line; document.getElementById("education").appendChild(div);});
     playVoice(task.steps[lang]);
   });
 }
 
-// TYPING EFFECT
-function typeText(text, callback) {
-  const box = document.getElementById("search-box");
-  let i = 0;
-  const sound = document.getElementById("typing-sound");
-  const interval = setInterval(() => {
-    box.innerText += text[i];
-    sound.currentTime = 0;
-    sound.play();
+// Typing effect
+function typeText(text,callback){
+  const box=document.getElementById("search-box");
+  let i=0;
+  const interval=setInterval(()=>{
+    box.innerText+=text[i];
     i++;
-    if(i >= text.length) { clearInterval(interval); callback(); }
-  }, 90);
+    if(i>=text.length){clearInterval(interval);callback();}
+  },90);
 }
 
-// PLAY VOICE + SUBTITLES
-function playVoice(lines) {
-  const subtitles = document.getElementById("subtitles");
+// Voice + subtitles
+function playVoice(lines){
   const text = lines.join(". ") + ".";
-  subtitles.innerText = text;
-  subtitles.style.display = "block";
-  if("speechSynthesis" in window){
+  const subtitles=document.getElementById("subtitles");
+  subtitles.innerText=text;
+  subtitles.style.display="block";
+  if('speechSynthesis' in window){
     speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = lang === "zh" ? "zh-CN" : "en-US";
+    const utter=new SpeechSynthesisUtterance(text);
+    utter.lang=lang==="zh"?"zh-CN":"en-US";
     speechSynthesis.speak(utter);
   }
-  setTimeout(()=>{ subtitles.style.display = "none"; }, Math.max(text.length*70,5000));
+  setTimeout(()=>{ subtitles.style.display="none"; }, Math.max(text.length*70,5000));
 }
-
-setTimeout(()=>show("home"),4500);
 </script>
 </body>
 </html>
