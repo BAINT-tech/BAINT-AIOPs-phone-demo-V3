@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Baint OS – AIOPs Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body { background:#E5E7EB; font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
 .phone { width:380px; height:760px; background:#000; border-radius:40px; padding:14px; box-shadow:0 30px 60px rgba(0,0,0,0.4); }
@@ -67,6 +66,11 @@ button { background:#1E90FF; border:none; padding:12px 24px; border-radius:10px;
     <button id="studentModeBtn" onclick="selectMode('student')">Student Assist</button>
   </div>
   
+  <div class="toggle">
+    <button id="enBtn" class="active" onclick="setLang('en')">English</button>
+    <button id="zhBtn" onclick="setLang('zh')">中文</button>
+  </div>
+  
   <div class="icon-grid">
     <div class="app" onclick="startSelectedMode()"><div class="icon"></div>Start</div>
     <div class="app"><div class="icon"></div>Automation</div>
@@ -100,9 +104,9 @@ let selectedMode = "demo";
 
 // Demo apps
 const appsDemo = [
-  {id:"whatsapp", title:{en:"WhatsApp Interface", zh:"WhatsApp 界面"}, search:"Send a message to Alex", result:{en:"AI typed and sent a message.", zh:"AI 已输入并发送消息。"}, edu:{en:["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh:["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]}},
-  {id:"x", title:{en:"X Interface", zh:"X 界面"}, search:"Post a quick update", result:{en:"AI posted successfully.", zh:"AI 已成功发布。"}, edu:{en:["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh:["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]}},
-  {id:"spotify", title:{en:"Spotify Interface", zh:"Spotify 界面"}, search:"Play my playlist", result:{en:"AI started playing music.", zh:"AI 开始播放音乐。"}, edu:{en:["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh:["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]}}
+  {id:"whatsapp", title:{en:"WhatsApp Interface", zh:"WhatsApp 界面"}, search:{en:"Send a message to Alex", zh:"发送消息给Alex"}, result:{en:"AI typed and sent a message.", zh:"AI 已输入并发送消息。"}, edu:{en:["Task authorized","AIOPs opened WhatsApp","Typed and sent a message","No cloud used"], zh:["任务已授权","AIOPs 打开 WhatsApp","输入并发送消息","无云端使用"]}},
+  {id:"x", title:{en:"X Interface", zh:"X 界面"}, search:{en:"Post a quick update", zh:"发布快速更新"}, result:{en:"AI posted successfully.", zh:"AI 已成功发布。"}, edu:{en:["Task authorized","AIOPs opened X","Posted update","No cloud used"], zh:["任务已授权","AIOPs 打开 X","发布更新","无云端使用"]}},
+  {id:"spotify", title:{en:"Spotify Interface", zh:"Spotify 界面"}, search:{en:"Play my playlist", zh:"播放我的歌单"}, result:{en:"AI started playing music.", zh:"AI 开始播放音乐。"}, edu:{en:["Task authorized","AIOPs opened Spotify","Playing playlist","No cloud used"], zh:["任务已授权","AIOPs 打开 Spotify","播放播放列表","无云端使用"]}}
 ];
 
 // Student Assist task
@@ -122,8 +126,8 @@ window.addEventListener("load", ()=>{
 
 function setLang(l){
   lang=l;
-  document.getElementById("demoModeBtn").classList.toggle("active", l==="demo" && selectedMode==="demo");
-  document.getElementById("studentModeBtn").classList.toggle("active", l==="student" && selectedMode==="student");
+  document.getElementById("enBtn").classList.toggle("active", l==="en");
+  document.getElementById("zhBtn").classList.toggle("active", l==="zh");
 }
 
 // Mode selection
@@ -154,7 +158,7 @@ function startAIOPsDemo(){
   document.getElementById("search-box").innerText="";
   document.getElementById("result").innerText="";
   document.getElementById("education").innerHTML="<strong>What just happened?</strong>";
-  typeText(app.search, ()=>{
+  typeText(app.search[lang], ()=>{
     document.getElementById("result").innerHTML="<strong>Result Found</strong><br>"+app.result[lang];
     app.edu[lang].forEach(line=>{const div=document.createElement("div"); div.innerText="• "+line; document.getElementById("education").appendChild(div);});
     playVoice(app.edu[lang]);
@@ -180,6 +184,7 @@ function startStudentAssist(){
 // Typing effect
 function typeText(text,callback){
   const box=document.getElementById("search-box");
+  box.innerText="";
   let i=0;
   const interval=setInterval(()=>{
     box.innerText+=text[i];
