@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,6 +122,8 @@ window.addEventListener("load", ()=>{
 
 function setLang(l){
   lang=l;
+  document.getElementById("demoModeBtn").classList.toggle("active", l==="demo" && selectedMode==="demo");
+  document.getElementById("studentModeBtn").classList.toggle("active", l==="student" && selectedMode==="student");
 }
 
 // Mode selection
@@ -134,8 +135,14 @@ function selectMode(mode){
 
 // Start mode
 function startSelectedMode(){
-  if(selectedMode==="demo") startAIOPsDemo();
-  else startStudentAssist();
+  const cursor = document.getElementById("ai-cursor");
+  cursor.style.display="block";
+  cursor.animate([{transform:"translate(0,0)"},{transform:"translate(140px,-100px)"},{transform:"translate(200px,-60px)"}],{duration:2500,easing:"ease-in-out",fill:"forwards"});
+  setTimeout(()=>{
+    cursor.style.display="none";
+    if(selectedMode==="demo") startAIOPsDemo();
+    else startStudentAssist();
+  },2600);
 }
 
 // AIOPs Demo
