@@ -1,142 +1,108 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Baint OS – AIOPs Study Mode</title>
+<title>BAINT AIOPs Demo</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
-  background:#E5E7EB;
-  font-family:Arial,sans-serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
   margin:0;
-}
-
-.phone{
-  width:380px;
-  height:760px;
-  background:#000;
-  border-radius:40px;
-  padding:14px;
-  box-shadow:0 30px 60px rgba(0,0,0,0.4);
-}
-
-.screen-wrapper{
-  width:100%;
-  height:100%;
-  background:#fff;
-  border-radius:28px;
-  overflow:hidden;
-  position:relative;
-}
-
-.notch{
-  width:140px;
-  height:24px;
-  background:#000;
-  border-radius:0 0 14px 14px;
-  margin:0 auto;
+  font-family:Arial, sans-serif;
+  background:#0b0f14;
+  color:#fff;
 }
 
 .screen{
   display:none;
-  height:100%;
   padding:20px;
-  box-sizing:border-box;
 }
-.screen.active{display:block;}
+.screen.active{display:block}
 
-.center{
+.header{
   display:flex;
-  flex-direction:column;
-  justify-content:center;
+  justify-content:space-between;
   align-items:center;
-  height:100%;
-  text-align:center;
 }
 
-button{
-  background:#1E90FF;
+.lang button{
+  margin-left:6px;
+  padding:6px 10px;
   border:none;
-  padding:12px 24px;
-  border-radius:10px;
-  color:white;
-  font-size:14px;
+  border-radius:6px;
   cursor:pointer;
-  margin-top:16px;
 }
+.lang .active{background:#00ffa2;color:#000}
 
 .card{
-  background:#F9FAFB;
-  border-radius:14px;
+  background:#111822;
+  border-radius:12px;
   padding:16px;
-  border:1px solid #E5E7EB;
   margin-top:20px;
 }
 
-.toggle{
-  display:flex;
-  gap:10px;
-}
-.toggle button{
-  background:#E5E7EB;
-  color:#111;
-}
-.toggle .active{
-  background:#1E90FF;
-  color:#fff;
-}
-
-/* Study editor */
-.editor{
-  background:#F9FAFB;
-  border:1px solid #E5E7EB;
-  border-radius:12px;
+button.main{
+  width:100%;
   padding:14px;
-  font-size:14px;
-  margin-top:16px;
-  line-height:1.5;
-}
-
-/* Suggestion box */
-.suggestion{
-  background:#EEF6FF;
-  border-left:4px solid #1E90FF;
-  padding:12px;
-  border-radius:8px;
-  margin-top:14px;
-  font-size:13px;
-}
-
-/* Cursor */
-#ai-cursor{
-  width:16px;
-  height:16px;
-  background:#1E90FF;
-  border-radius:50%;
-  position:absolute;
-  top:55%;
-  left:20%;
-  display:none;
-  z-index:10;
-  box-shadow:0 0 12px rgba(30,144,255,0.9);
-}
-
-/* Subtitles */
-.subtitles{
-  position:absolute;
-  bottom:20px;
-  left:20px;
-  right:20px;
-  background:rgba(0,0,0,0.75);
-  color:#fff;
-  padding:10px;
+  font-size:16px;
+  border:none;
   border-radius:10px;
-  font-size:13px;
+  background:#00ffa2;
+  color:#000;
+  cursor:pointer;
+  margin-top:15px;
+}
+
+.task-btn{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #333;
+  background:#151c26;
+  color:#fff;
+  cursor:pointer;
+}
+
+.app-bar{
+  font-size:14px;
+  opacity:.7;
+  margin-bottom:10px;
+}
+
+.box{
+  background:#0e141d;
+  border-radius:8px;
+  padding:10px;
+  min-height:40px;
+  margin-bottom:10px;
+}
+
+#education{
+  font-size:14px;
+  opacity:.85;
+  margin-top:10px;
+}
+
+#subtitles{
+  position:fixed;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,.75);
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:14px;
+  display:none;
+}
+
+#cursor{
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:#00ffa2;
   display:none;
 }
 </style>
@@ -144,132 +110,203 @@ button{
 
 <body>
 
-<div class="phone">
-<div class="screen-wrapper">
-<div class="notch"></div>
-
-<!-- BOOT -->
-<div class="screen active" id="boot">
-  <div class="center">
-    <h2>Baint OS</h2>
-    <p>Education-first AIOPs</p>
-  </div>
-</div>
-
-<!-- HOME -->
-<div class="screen" id="home">
-  <h3>Home</h3>
-  <p style="font-size:13px">AI that explains while it helps</p>
-  <button onclick="show('aiops')">Open AIOPs</button>
-</div>
-
-<!-- AIOPS -->
-<div class="screen" id="aiops">
-  <h3>AIOPs Brain Engine</h3>
-
-  <div class="toggle">
-    <button id="enBtn" class="active" onclick="setLang('en')">English</button>
-    <button id="zhBtn" onclick="setLang('zh')">中文</button>
+<div id="home" class="screen active">
+  <div class="header">
+    <h3>BAINT AIOPs</h3>
+    <div class="lang">
+      <button id="enBtn" class="active" onclick="setLang('en')">EN</button>
+      <button id="zhBtn" onclick="setLang('zh')">中文</button>
+    </div>
   </div>
 
   <div class="card">
-    <strong>Study Mode</strong>
-    <p style="font-size:13px">
-      Helps students improve writing by explaining what to change.
+    <p id="intro">
+      On-device AI Operations system.<br>
+      Observe → Explain → Act.
     </p>
-    <button onclick="startStudy()">Authorize Study Task</button>
+    <button class="main" onclick="authorize()">
+      Authorize AI Task
+    </button>
   </div>
-
-  <button onclick="show('home')">Back</button>
 </div>
 
-<!-- STUDY MODE -->
-<div class="screen" id="study">
-  <h3>Study Mode</h3>
+<div id="tasks" class="screen">
+  <h3 id="taskTitle">Select a Task</h3>
 
-  <div class="editor">
-    <strong>Draft:</strong><br><br>
-    Education is important because it helps people learn new things.
-    In the age of AI, technology is growing very fast.
-    Students need to understand AI so they can use it well in the future.
-  </div>
+  <button class="task-btn" onclick="startTask('study')">
+    📘 Study / Assignment Assistance
+  </button>
 
-  <div class="suggestion" id="suggestion" style="display:none"></div>
+  <button class="task-btn" onclick="startTask('browser')">
+    🌐 Browser Automation Demo
+  </button>
 
-  <div style="margin-top:14px;font-size:12px;color:#374151">
-    • You authorized this task<br>
-    • AIOPs observes the screen<br>
-    • It explains instead of replacing thinking<br>
-    • No cloud • On-device
-  </div>
-
-  <button onclick="show('home')">Done</button>
+  <button class="task-btn" onclick="startTask('message')">
+    💬 Message Writing Demo
+  </button>
 </div>
 
-<div id="ai-cursor"></div>
-<div class="subtitles" id="subtitles"></div>
+<div id="demo" class="screen">
+  <div class="app-bar" id="appBar"></div>
+  <div class="box" id="inputBox"></div>
+  <div class="box" id="resultBox"></div>
+  <div id="education"></div>
+</div>
 
-</div>
-</div>
+<div id="subtitles"></div>
+<div id="cursor"></div>
 
 <script>
 let lang="en";
 
-const text={
-  en:{
-    speak:"This sentence is clear, but it is too general. Good academic writing explains why something matters.",
-    suggest:"Suggestion: Explain how education helps people understand technology and make better decisions."
+const TEXT={
+  intro:{
+    en:"On-device AI Operations system.<br>Observe → Explain → Act.",
+    zh:"设备端 AI 操作系统。<br>观察 → 解释 → 执行。"
   },
-  zh:{
-    speak:"这个句子很清楚，但过于笼统。好的学术写作需要解释为什么它重要。",
-    suggest:"建议：解释教育如何帮助人们理解技术并做出更好的决策。"
+  select:{
+    en:"Select a Task",
+    zh:"选择任务"
   }
 };
 
-setTimeout(()=>show('home'),2000);
+const TASKS={
+  study:{
+    title:{en:"Study Assistant",zh:"学习助手"},
+    explain:{
+      en:[
+        "You authorized a study task",
+        "AIOPs will help structure an assignment",
+        "It explains before writing",
+        "Student remains in control"
+      ],
+      zh:[
+        "您已授权学习任务",
+        "AIOPs 将帮助构建作业",
+        "先解释 再书写",
+        "学生始终掌控"
+      ]
+    },
+    action:{
+      input:"Write an introduction about Artificial Intelligence",
+      result:{
+        en:"Artificial Intelligence refers to systems designed to simulate human intelligence in problem solving, learning, and decision making.",
+        zh:"人工智能是指模拟人类在学习、推理和决策中的智能系统。"
+      }
+    }
+  },
 
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+  browser:{
+    title:{en:"Browser Demo",zh:"浏览器演示"},
+    explain:{
+      en:[
+        "You selected browser automation",
+        "AIOPs observes the interface",
+        "Then performs visual interaction",
+        "No cloud processing"
+      ],
+      zh:[
+        "您选择了浏览器自动化",
+        "AIOPs 观察界面",
+        "然后进行视觉交互",
+        "无需云端处理"
+      ]
+    },
+    action:{
+      input:"Search: What is AIOps?",
+      result:{
+        en:"AIOps combines AI and IT operations to automate system management.",
+        zh:"AIOps 将人工智能与 IT 运维结合，实现系统自动化。"
+      }
+    }
+  },
+
+  message:{
+    title:{en:"Message Writing",zh:"消息撰写"},
+    explain:{
+      en:[
+        "You selected message assistance",
+        "AIOPs drafts text based on intent",
+        "User reviews before sending"
+      ],
+      zh:[
+        "您选择了消息辅助",
+        "AIOPs 根据意图生成文本",
+        "发送前由用户确认"
+      ]
+    },
+    action:{
+      input:"Write a polite message to a lecturer",
+      result:{
+        en:"Hello Sir, I hope you are well. I would like to ask for clarification regarding the assignment deadline.",
+        zh:"老师您好，希望您一切安好。我想咨询一下作业截止时间。"
+      }
+    }
+  }
+};
 
 function setLang(l){
   lang=l;
   enBtn.classList.toggle("active",l==="en");
   zhBtn.classList.toggle("active",l==="zh");
+  intro.innerHTML=TEXT.intro[lang];
+  taskTitle.innerText=TEXT.select[lang];
 }
 
-function startStudy(){
-  show('study');
-  const cursor=document.getElementById("ai-cursor");
-  cursor.style.display="block";
-
-  cursor.animate([
-    {transform:"translate(0,0)"},
-    {transform:"translate(120px,-80px)"}
-  ],{duration:2000,fill:"forwards"});
-
-  setTimeout(()=>{
-    cursor.style.display="none";
-    explain();
-  },2100);
+function authorize(){
+  show("tasks");
 }
 
-function explain(){
+function startTask(id){
+  const t=TASKS[id];
+  show("demo");
+  appBar.innerText=t.title[lang];
+  inputBox.innerText="";
+  resultBox.innerText="";
+  education.innerHTML="<strong>Education Mode</strong>";
+  explainThenAct(t);
+}
+
+function explainThenAct(task){
+  const text=task.explain[lang].join(". ");
   const sub=document.getElementById("subtitles");
-  const sug=document.getElementById("suggestion");
-  sub.innerText=text[lang].speak;
+  sub.innerText=text;
   sub.style.display="block";
-  sug.innerText=text[lang].suggest;
-  sug.style.display="block";
 
   if("speechSynthesis"in window){
-    const u=new SpeechSynthesisUtterance(text[lang].speak);
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(text);
     u.lang=lang==="zh"?"zh-CN":"en-US";
     speechSynthesis.speak(u);
   }
 
-  setTimeout(()=>sub.style.display="none",8000);
+  setTimeout(()=>{
+    sub.style.display="none";
+    perform(task);
+  },3500);
+}
+
+function perform(task){
+  typeText(task.action.input,inputBox,()=>{
+    resultBox.innerText=task.action.result[lang];
+  });
+}
+
+function typeText(text,el,cb){
+  let i=0;
+  const int=setInterval(()=>{
+    el.innerText+=text[i];
+    i++;
+    if(i>=text.length){
+      clearInterval(int);
+      cb();
+    }
+  },80);
+}
+
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 </script>
 
